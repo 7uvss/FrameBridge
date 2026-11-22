@@ -28,10 +28,10 @@ def require_idle_preview():
     status = subprocess.run(["/usr/bin/pgrep", "-u", str(os.getuid()), "-x", "FrameBridge"],
                             stdout=subprocess.DEVNULL).returncode
     if status == 0:
-        print("FrameBridge 正在使用中，基准已退出。", file=sys.stderr)
+        print("FrameBridge is running. Close the preview before running the benchmark.", file=sys.stderr)
         raise SystemExit(75)
     if status != 1:
-        raise SystemExit("无法确认播放器状态，已停止基准。")
+        raise SystemExit("Could not determine whether FrameBridge is running. Stopping the benchmark.")
 
 
 def run_isolated(command, capture_output=False, timeout=180):

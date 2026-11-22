@@ -1,61 +1,67 @@
 # FrameBridge
 
-在 Apple Silicon Mac 的窗口或外接屏幕上播放 PS5 的 HDMI 采集画面，目标为 1920 × 1080、60 fps。此版本针对 USB3 Video 与 USB3 Digital Audio，使用 macOS 26 或更高版本。
+FrameBridge plays PS5 HDMI capture on an Apple Silicon Mac. Its interpolation mode targets 1080p at 60 fps from a 30 fps game carried over a 60 Hz HDMI signal. You can also view the capture at its native frame rate. Both modes play HDMI audio through the Mac’s current audio output.
 
-## 玩游戏
+## Build and play
 
-按下文编译后，双击项目上一级目录里的 FrameBridge.app。允许相机和麦克风权限后，游戏声音跟随 Mac 的系统输出。绿按钮可进入全屏，手柄继续连接 PS5。
+You need macOS 26 or later, Xcode or Apple Command Line Tools with the macOS 26 SDK or later, and Python 3. The app looks for a capture card named `USB3 Video` and an audio device named `USB3 Digital Audio`. Connect the PS5 to the card’s HDMI input and the card to the Mac over USB. Keep the controller connected to the PS5.
 
-「清晰补帧」固定按 30→60 播放。每两个 60 Hz 采集时隙取一张原帧，在相邻原帧之间生成一张中间帧。真 60 fps 的游戏片段也按同样节奏处理。采集时隙缺失时保留可用原帧，恢复连续输入后继续补帧。
-
-「原生输出」直接播放最新采集画面。在 macOS 菜单栏的「输出」菜单可随时切换，两种输出共用采集会话和 HDMI 音频。
-
-运行日志中的「选取」和「补」分别统计原帧和已入队的生成帧。「显示」统计实际呈现的帧数，「上屏补帧」单独统计实际呈现的生成帧。画面内容静止时也会产生新时间戳。软件延迟按原帧从进入播放器到首次呈现计算，慢间隔统计换帧超过 22 毫秒的次数。
-
-## 实现与延迟
-
-AVFoundation 采集 SDR 视频。启动会话后再次写入摄像设备支持的 60 Hz 帧时长，避免设备在协商时回到 20 Hz。采集会话请求视频范围 NV12，通过 CVMetalTextureCache 将亮度、色度平面交给 Metal。GPU 先估计大范围平移，再细化局部运动。在车身、路灯和背景的交界处，算法逐像素对比两张原画，综合附近区域的一致运动与上一对连续画面的位移，细化到四分之一像素。切镜和时间不连续时会舍弃运动历史。Metal 还会从十六分之一尺寸的图像中搜索较大位移。亮度和色度共用同一运动向量和混合权重。MTKView 按显示刷新呈现。快速移动、遮挡和细线条可能出现错位。
-
-「清晰补帧」保留选取的原帧。生成中间帧时，VideoToolbox 在 720p 估计运动并生成参考画面，Metal 同时在采集分辨率对齐两张原画。两路结果的局部亮度和纹理吻合时，着色器将高频亮度细节加入放大的参考画面。
-
-0.9.3 在整幅画面上取样，检验局部运动估计能否解释大范围的镜头移动。只有前后帧在对齐位置的亮度和周边纹理也吻合时，才用原始采集分辨率重建移动边缘的亮度。遮挡或多层运动时会降低该估计的权重。
-
-0.9.4 在不同高度分别校验运动，细化对应区域的位移。遇到遮挡时，比较两端局部纹理和参考画面的匹配程度。如果只有一侧保留了可见的背景细节，可以用那一侧重建亮度。两端都缺失的细节仍依赖模型估计。
-
-生成帧时，若前后两张原画在同一位置的亮度和附近纹理都吻合，并与预测结果接近，则直接使用两张原画在该位置的平均亮度。这能保留固定 HUD、文字和静止纹理的细节。模型在独立队列预热和处理，最多保留一个在途任务。模型忙碌或需要补两帧时由 Metal 生成中间画面。
-
-软件预留 33 ms 播放缓冲。渲染器在高刷新率屏幕上最多每秒检查 120 次是否有新画面，使用两个显示缓冲。端到端延迟还包含游戏渲染、采集卡、USB 传输和屏幕扫描。USB 音频通过 AVCaptureAudioPreviewOutput 直接监听，未另加视频缓冲补偿。
-
-## 本地编译
-
-安装含 macOS 26 或更新 SDK 的 Apple Command Line Tools 或 Xcode。在本目录运行以下命令。编译脚本生成上一级的 FrameBridge.app，并进行本机临时签名。
+From the repository root, run
 
 ```sh
 ./build.sh
 open ../FrameBridge.app
 ```
 
-## 画质、送显与延迟回归
+Allow camera access for video and microphone access for HDMI audio. The preview opens at the available screen size. Use the green window button to enter full screen.
 
-基准独立编译，用固定素材回放。请在专用测试 Mac 或空闲 Mac 上运行，保持亮屏、相同刷新率和相近负载。检测到本机 FrameBridge 正在使用时立即退出；测试中启动预览会终止测试。需要 Python 3 和 Xcode 命令行工具。使用 MKV 录像时还需要 ffmpeg。脚本临时编译与预览窗口共用播放器和着色器的测试程序，打印每轮结果，将完整 JSON 写入指定文件。回归超限会返回非零退出码。
+Open the **Output** menu (输出) to switch modes during play. Both modes share the same capture and audio sessions.
+
+| Menu item | What it does |
+| --- | --- |
+| Frame interpolation (清晰补帧) | Selects one original frame every two 60 Hz capture slots and generates a midpoint between consecutive selected frames. The cadence stays fixed even when the game itself reaches 60 fps. If capture slots go missing, the player keeps the available originals and resumes interpolation when consecutive pairs return. |
+| Native output (原生输出) | Displays the latest frame from the card directly. Use this for games already running at 60 fps or to compare the original picture with the interpolated output. |
+| Reconnect (重新连接) | Reopens the capture session after a device or connection change. |
+
+## How interpolation works
+
+AVFoundation requests SDR video in video-range NV12. After capture starts, FrameBridge reapplies the supported 60 Hz frame duration because the card can renegotiate to 20 Hz during startup. A Core Video Metal texture cache maps the luma and chroma planes for GPU processing.
+
+For each consecutive pair of selected originals, VideoToolbox generates a 720p reference midpoint while Metal aligns the originals at capture resolution. Metal searches for large camera translations on a downsampled image, checks the motion at different heights and refines local displacement to quarter-pixel precision. Where local brightness and texture agree with the reference, the shader restores high-frequency luma detail from the aligned originals. When one endpoint is occluded, the shader can recover detail from the other. Matching stationary neighborhoods help preserve HUD text and fine textures. Fast turns, thin objects and newly revealed backgrounds can still produce visible artifacts.
+
+VideoToolbox runs on a separate queue with one job in flight. A Metal path can generate the midpoint when the model is unavailable or busy. The player queues each selected original immediately so it can still appear when its midpoint misses the presentation deadline.
+
+## Frame pacing and latency
+
+The default playback buffer is 33 ms. On high-refresh displays the renderer checks for new frames up to 120 times per second and uses two drawable buffers. HDMI audio goes directly through `AVCaptureAudioPreviewOutput` without an additional video-delay adjustment.
+
+The runtime log counts selected originals (选取), queued midpoints (补), frames actually presented (显示), and midpoints actually presented (上屏补帧). A static scene can still produce new timestamps. A slow interval is a gap longer than 22 ms between presentations of distinct frames. Software latency measures the time from an original frame entering the player until its first presentation. Measuring controller-to-screen latency also requires accounting for the game, HDMI capture, USB transfer and panel response.
+
+## Run benchmarks
+
+Use an idle or dedicated Mac with the display awake. Keep the refresh rate and system load comparable between runs. The benchmark builds a separate executable from the same player and shaders. It exits if FrameBridge is open, including when the preview opens during a test.
 
 ```sh
 python3 Benchmarks/run.py --out /tmp/framebridge-check.json
 ```
 
-默认画质测试使用可重建的 1080p 摇镜场景（细杆、遮挡、静止 HUD）。可通过 `--clip` 提供自己的 1080p60 NV12 或 FFV1 MKV 录像。仓库中的历史结果使用了本地保存的两秒游戏录像，`--check` 复查这组结果时需要同一段原始素材。程序隐藏中间画面，再以真实中间帧为参照，测量亮度平均绝对误差、边缘误差、边缘梯度误差和大误差边缘像素比例。对约 30 fps 的实机片段隔帧抽样，相当于用更大的时间间隔考察运动还原。报告另列生成耗时的中位数和 P95。单段样本覆盖的运动有限。
+The default quality test generates a reproducible 1080p pan with thin poles, occlusions and a stationary HUD. It withholds known intermediate frames, reconstructs them and compares the results against the originals. The report includes mean absolute luma error, edge error, edge-gradient error, the fraction of edge pixels with large errors, and median and P95 generation time.
 
-送显测试以 60 Hz 投喂每帧重复两次的 30 fps 合成序列，在真实 Metal 窗口中播放。每轮预热两秒，随后测六秒，共三轮。通过 drawable 的呈现时间戳按画面去重，分别统计原始帧和生成帧首次上屏的数量。软件延迟从原始帧进入播放器计时，到其第一次被系统报告呈现为止。手柄、游戏、HDMI、采集卡和面板像素响应需要外部测量。
-
-默认回归要求每轮每秒至少呈现 59 张不同画面，三轮的生成帧率中位数至少为 29。与相同机器、系统和样本的参考结果比较，送显帧率中位数最多下降 0.5 fps，原帧延迟 P95 最多增加 2 ms；每项画质误差的容差为参考值的 3% 加 0.05。更换机器或系统时可用下面的命令建立新参考，再用 `--against` 比较候选版本。保留每轮原始结果，便于发现偶发卡顿。
+To test your own footage, pass `--clip` with a 1080p60 raw NV12 file or an FFV1-encoded MKV. MKV decoding requires FFmpeg. Some historical reports used a locally held two-second gameplay clip. Reproducing those reports with `--check` requires that exact clip at `Benchmarks/fixtures/gameplay.mkv` and the reference machine and OS. For other setups, establish a local reference and reuse the same clip for comparisons.
 
 ```sh
-python3 Benchmarks/run.py --buffers 40 --clip Benchmarks/fixtures/gameplay.mkv --out /tmp/reference.json
-python3 Benchmarks/run.py --buffers 36 38 40 --clip Benchmarks/fixtures/gameplay.mkv --against /tmp/reference.json --out /tmp/candidates.json
+python3 Benchmarks/run.py --buffers 33 --clip /path/to/capture.mkv --out /tmp/reference.json
+python3 Benchmarks/run.py --buffers 32 33 34 --clip /path/to/capture.mkv --against /tmp/reference.json --out /tmp/candidates.json
 ```
 
-## 本机更新
+The playout test feeds a 60 Hz stream made from a 30 fps sequence with each frame repeated twice. It uses a real Metal window and counts each original and generated frame on its first presentation. By default it warms up for two seconds, then measures six seconds per round for three rounds. A passing profile presents at least 59 distinct frames per second in every round and a median of at least 29 generated frames per second. Against a matching reference, the median presentation rate may drop by up to 0.5 fps and original-frame P95 latency may increase by up to 2 ms. Each quality error may increase by up to 3% of its reference value plus 0.05. The command writes the individual rounds to JSON and exits with a nonzero status if a threshold is missed.
 
-固定入口为 `../FrameBridge.app`。`./build.sh` 在临时目录编译、验签后整体替换目标。默认使用临时签名。若需在本机更新时沿用签名身份，可将自己的 Apple Development 证书指纹保存到项目根目录的 `.signing-identity`，或使用优先级更高的环境变量 `FRAMEBRIDGE_SIGN_IDENTITY`。首次从临时签名版本迁移时，macOS 可能再次请求相机和麦克风授权。主程序更新在退出预览后发布。
+## Update a local installation
 
-从 0.9.6 起，`./hot-update.sh` 将当前 Metal 源码原子发布到本机 Application Support 中按构建号区分的目录。运行中的同构建预览会在后台准备渲染与计算管线，准备成功后接续处理画面；编译失败继续使用当前管线。更新必须兼容该构建的函数名、参数和纹理布局。用 `./hot-update.sh --reset` 删除覆盖并恢复内置着色器。采集、音频和 Objective-C 调度代码的变更通过完整应用更新交付。
+Close the preview before installing a new app build. The build script compiles into a staging directory, verifies the signature, then replaces the bundle at `../FrameBridge.app`. It uses ad hoc signing by default. To keep a consistent signing identity across updates, put your Apple Development certificate fingerprint in the local `.signing-identity` file or set `FRAMEBRIDGE_SIGN_IDENTITY`. The environment variable takes precedence. macOS may request camera and microphone access again when the signing identity changes.
+
+For a shader-only change, run `./hot-update.sh` to install the current Metal source for the current build number. The running app compiles the new pipelines in the background and switches after compilation succeeds. Shader function names, arguments and texture layouts must match the running build. Run `./hot-update.sh --reset` to restore the bundled shader. Changes to capture, audio or Objective-C scheduling require a full app build.
+
+## Project language
+
+Use English for repository documentation, commit messages, issues, pull requests and release notes. When reporting a playback issue, include the output mode, capture format and display refresh rate so others can reproduce it.
