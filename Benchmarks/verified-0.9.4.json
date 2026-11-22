@@ -1,0 +1,225 @@
+{
+  "baseline": "0.9.3",
+  "candidate": "0.9.4",
+  "profile": "visible",
+  "buffer_ms": 38,
+  "quality_metric": "absolute luma error versus withheld midpoint; lower is better.",
+  "parallax": "16 generated midpoints from a captured texture with scanline-dependent scroll, an independently moving foreground and fixed overlay. Occlusion band is within 20 pixels of either side of the foreground rectangle.",
+  "street": "Separate procedurally rendered scene. Windows, poles, a turning camera, a moving car and a stationary overlay. Car edge samples are within 20 pixels of the sides of the car body.",
+  "game": "29 withheld midpoints from the same recorded two-second capture.",
+  "playback": {
+    "0.9.3": [
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 57.32833332149312,
+        "original_p95_ms": 65.65795833012089,
+        "unique_fps": 60
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 60.40466664126143,
+        "original_p95_ms": 61.30987504730001,
+        "unique_fps": 60
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 29.875,
+        "original_fps": 30,
+        "original_p50_ms": 53.35495836334303,
+        "original_p95_ms": 62.005374988075346,
+        "unique_fps": 59.875
+      }
+    ],
+    "0.9.4": [
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 53.47337503917515,
+        "original_p95_ms": 62.47433333192021,
+        "unique_fps": 60
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 57.90924996836111,
+        "original_p95_ms": 58.74883331125602,
+        "unique_fps": 60
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 57.61158332461491,
+        "original_p95_ms": 58.51041665300727,
+        "unique_fps": 60
+      }
+    ]
+  },
+  "quality": {
+    "0.9.3": {
+      "parallax": {
+        "bad_edge_pct": 42.27974291253836,
+        "compute_p50_ms": 18.698416650295258,
+        "compute_p95_ms": 20.456750004086643,
+        "edge_gradient_error": 69.9553913561211,
+        "edge_mae": 26.905397462711633,
+        "mae": 1.365346796613382,
+        "occlusion_band_edge_mae": 42.451644736842105,
+        "occlusion_edge_count": 6080,
+        "pairs": 16,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "pan": {
+        "bad_edge_pct": 1.981411890555212,
+        "compute_p50_ms": 15.739541675429791,
+        "compute_p95_ms": 19.089125038590282,
+        "edge_gradient_error": 3.4991490869181665,
+        "edge_mae": 1.5248431888749192,
+        "mae": 0.29858477107948445,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 16,
+        "tracked": 38449,
+        "tracked_edge_error_change": 0.0005461780540456189
+      },
+      "diagonal": {
+        "bad_edge_pct": 1.5085030593777828,
+        "compute_p50_ms": 13.797625026199967,
+        "compute_p95_ms": 20.01745835877955,
+        "edge_gradient_error": 2.6382680761828157,
+        "edge_mae": 1.0388131625061043,
+        "mae": 0.2439856287909901,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 16,
+        "tracked": 25400,
+        "tracked_edge_error_change": 0.06023622047244095
+      },
+      "game": {
+        "bad_edge_pct": 8.393062747532959,
+        "compute_p50_ms": 15.854874975048006,
+        "compute_p95_ms": 20.173333294223994,
+        "edge_gradient_error": 19.292178812484803,
+        "edge_mae": 6.087000990634187,
+        "mae": 0.34792928060516404,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 29,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "synthetic": {
+        "bad_edge_pct": 1.883194699828837,
+        "compute_p50_ms": 20.203041669446975,
+        "compute_p95_ms": 22.450416698120534,
+        "edge_gradient_error": 2.806214375348742,
+        "edge_mae": 1.0567774243597863,
+        "mae": 0.6572927197194668,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 30,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      }
+    },
+    "0.9.4": {
+      "parallax": {
+        "bad_edge_pct": 35.22739416515274,
+        "compute_p50_ms": 21.944083331618458,
+        "compute_p95_ms": 24.508124974090606,
+        "edge_gradient_error": 59.514228355953165,
+        "edge_mae": 22.539876036212082,
+        "mae": 1.1201970919946926,
+        "occlusion_band_edge_mae": 41.23881578947368,
+        "occlusion_edge_count": 6080,
+        "pairs": 16,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "pan": {
+        "bad_edge_pct": 1.9088237950028828,
+        "compute_p50_ms": 21.21316664852202,
+        "compute_p95_ms": 21.703083359170705,
+        "edge_gradient_error": 3.41129317949751,
+        "edge_mae": 1.4814952453060857,
+        "mae": 0.29364784565141844,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 16,
+        "tracked": 38449,
+        "tracked_edge_error_change": 0.0005461780540456189
+      },
+      "diagonal": {
+        "bad_edge_pct": 1.430941369107466,
+        "compute_p50_ms": 20.857750030700117,
+        "compute_p95_ms": 22.296458366326988,
+        "edge_gradient_error": 2.4527448220390107,
+        "edge_mae": 0.9578294217345092,
+        "mae": 0.23779960174859419,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 16,
+        "tracked": 25400,
+        "tracked_edge_error_change": 0.024015748031496063
+      },
+      "game": {
+        "bad_edge_pct": 8.366940547882997,
+        "compute_p50_ms": 21.602583350613713,
+        "compute_p95_ms": 22.887083294335753,
+        "edge_gradient_error": 19.244306867526287,
+        "edge_mae": 6.0663624435107435,
+        "mae": 0.34592682354248416,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 29,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "synthetic": {
+        "bad_edge_pct": 1.778495600848517,
+        "compute_p50_ms": 14.541916665621102,
+        "compute_p95_ms": 21.7812082846649,
+        "edge_gradient_error": 2.8497764520025144,
+        "edge_mae": 0.9970947000642745,
+        "mae": 0.6869714333101662,
+        "occlusion_band_edge_mae": 0,
+        "occlusion_edge_count": 0,
+        "pairs": 30,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      }
+    }
+  },
+  "independent_street": {
+    "0.9.3": {
+      "bad_edge_pct": 43.35803472619171,
+      "car_edge_mae": 33.602658788774,
+      "car_edges": 3385,
+      "compute_p50_ms": 17.438333306927234,
+      "compute_p95_ms": 19.966291612945497,
+      "edge_gradient_error": 55.69722398057415,
+      "edge_mae": 29.56575448404107,
+      "mae": 6.681360249691982,
+      "pairs": 16
+    },
+    "0.9.4": {
+      "bad_edge_pct": 40.86533330799357,
+      "car_edge_mae": 33.43397341211226,
+      "car_edges": 3385,
+      "compute_p50_ms": 18.22529168566689,
+      "compute_p95_ms": 23.737916664686054,
+      "edge_gradient_error": 55.62128364401341,
+      "edge_mae": 29.179482981183767,
+      "mae": 6.550720041305996,
+      "pairs": 16
+    }
+  },
+  "shader_sha256": "574bb6d9c388406675133d995ba8982494e45360e67e197ee06da9627520f7ac"
+}

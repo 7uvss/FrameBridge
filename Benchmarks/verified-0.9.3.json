@@ -1,0 +1,178 @@
+{
+  "baseline": "0.9.2",
+  "candidate": "0.9.3",
+  "variant": "layered",
+  "buffer_ms": 38,
+  "pan": "Synthetic scene from a single captured frame with known horizontal/diagonal shifts, foreground occluder and fixed overlay. Not a recording of live PS5 panning.",
+  "temporal_metric": "Mean absolute change in signed midpoint luma error across consecutive motion-tracked background edge samples. Excludes foreground and HUD.",
+  "parallax": "Separate texture, scanline-dependent displacement, moving foreground patch and fixed overlay.",
+  "game": "29 withheld midpoints in a two-second captured clip.",
+  "latency": "Capture callback entry to first Metal presentation of an original. Each matched trial used a 2-second warm-up.",
+  "quality": {
+    "0.9.2": {
+      "pan": {
+        "bad_edge_pct": 33.467279787167534,
+        "compute_p50_ms": 16.925124975387007,
+        "compute_p95_ms": 17.680375021882355,
+        "edge_gradient_error": 57.04271583670804,
+        "edge_mae": 21.278074922028576,
+        "mae": 1.2760435588709167,
+        "pairs": 16,
+        "tracked": 38449,
+        "tracked_edge_error_change": 0.6670394548622851
+      },
+      "diagonal": {
+        "bad_edge_pct": 30.4106460601534,
+        "compute_p50_ms": 16.190499998629093,
+        "compute_p95_ms": 18.580416624899954,
+        "edge_gradient_error": 52.19122188388728,
+        "edge_mae": 19.16711312516159,
+        "mae": 1.1066915664292032,
+        "pairs": 16,
+        "tracked": 25400,
+        "tracked_edge_error_change": 12.815275590551181
+      },
+      "game": {
+        "bad_edge_pct": 8.394067447519497,
+        "compute_p50_ms": 16.857875045388937,
+        "compute_p95_ms": 18.54445831850171,
+        "edge_gradient_error": 19.288087674139625,
+        "edge_mae": 6.085725021651284,
+        "mae": 0.34791566354309417,
+        "pairs": 29,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "synthetic": {
+        "bad_edge_pct": 7.430457620055516,
+        "compute_p50_ms": 12.479083321522921,
+        "compute_p95_ms": 14.64645832311362,
+        "edge_gradient_error": 18.375126488848498,
+        "edge_mae": 6.862024386626203,
+        "mae": 4.429508579747688,
+        "pairs": 30,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "parallax": {
+        "bad_edge_pct": 45.676152237302105,
+        "compute_p50_ms": 15.810874989256263,
+        "compute_p95_ms": 17.890333314426243,
+        "edge_gradient_error": 75.30054348655787,
+        "edge_mae": 28.90652718196113,
+        "mae": 1.490267077225627,
+        "pairs": 16
+      }
+    },
+    "0.9.3": {
+      "pan": {
+        "bad_edge_pct": 1.981411890555212,
+        "compute_p50_ms": 21.183708333410323,
+        "compute_p95_ms": 22.336416644975543,
+        "edge_gradient_error": 3.4991490869181665,
+        "edge_mae": 1.5248431888749192,
+        "mae": 0.29858477107948445,
+        "pairs": 16,
+        "tracked": 38449,
+        "tracked_edge_error_change": 0.0005461780540456189
+      },
+      "diagonal": {
+        "bad_edge_pct": 1.5085030593777828,
+        "compute_p50_ms": 20.77283337712288,
+        "compute_p95_ms": 22.283333353698254,
+        "edge_gradient_error": 2.6382680761828157,
+        "edge_mae": 1.0388131625061043,
+        "mae": 0.2439856287909901,
+        "pairs": 16,
+        "tracked": 25400,
+        "tracked_edge_error_change": 0.06023622047244095
+      },
+      "game": {
+        "bad_edge_pct": 8.393062747532959,
+        "compute_p50_ms": 18.77791667357087,
+        "compute_p95_ms": 22.83954166341573,
+        "edge_gradient_error": 19.292178812484803,
+        "edge_mae": 6.087000990634187,
+        "mae": 0.34792928060516404,
+        "pairs": 29,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "synthetic": {
+        "bad_edge_pct": 1.883194699828837,
+        "compute_p50_ms": 12.191499990876764,
+        "compute_p95_ms": 12.81237497460097,
+        "edge_gradient_error": 2.806214375348742,
+        "edge_mae": 1.0567774243597863,
+        "mae": 0.6572927197194668,
+        "pairs": 30,
+        "tracked": 0,
+        "tracked_edge_error_change": 0
+      },
+      "parallax": {
+        "bad_edge_pct": 42.27974291253836,
+        "compute_p50_ms": 21.358166646678,
+        "compute_p95_ms": 25.889749987982213,
+        "edge_gradient_error": 69.9553913561211,
+        "edge_mae": 26.905397462711633,
+        "mae": 1.365346796613382,
+        "pairs": 16
+      }
+    }
+  },
+  "playback": {
+    "baseline": [
+      {
+        "buffer_ms": 38,
+        "generated_fps": 29.9,
+        "original_fps": 30,
+        "original_p50_ms": 57.677333359606564,
+        "original_p95_ms": 58.5036666598171,
+        "unique_fps": 59.9
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 29.9,
+        "original_fps": 30,
+        "original_p50_ms": 53.81508334539831,
+        "original_p95_ms": 70.1569999800995,
+        "unique_fps": 59.9
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 57.20804166048765,
+        "original_p95_ms": 65.54266664898023,
+        "unique_fps": 60
+      }
+    ],
+    "layered": [
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 58.642916672397405,
+        "original_p95_ms": 59.458791685756296,
+        "unique_fps": 60
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 57.306833332404494,
+        "original_p95_ms": 57.81724996631965,
+        "unique_fps": 60
+      },
+      {
+        "buffer_ms": 38,
+        "generated_fps": 30,
+        "original_fps": 30,
+        "original_p50_ms": 59.29066665703431,
+        "original_p95_ms": 67.62229168089107,
+        "unique_fps": 60
+      }
+    ]
+  },
+  "shader_sha256": "083657c3ae97d00374949e9684f1c51f8ce95b0f67b834d44a31540d08ba4ac7"
+}

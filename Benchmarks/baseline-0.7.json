@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "machine": "MacBookPro18,1",
+  "macOS": "27.2.1",
+  "seconds": 6,
+  "rounds": 3,
+  "fixture": "eab77afa1f5bcbbbff2a50f16c923731504e7ce4c70e9730b275b46f8e1866c2",
+  "source": "0876dc8fe568417f748a1adf0475b5dd80d39d80794fb1b3ae1411ea8b308a16",
+  "quality": {
+    "synthetic": {
+      "bad_edge_pct": 7.490141050663817,
+      "compute_p50_ms": 21.20845834724605,
+      "compute_p95_ms": 25.20862501114607,
+      "edge_gradient_error": 18.481733574107515,
+      "edge_mae": 6.925541212174007,
+      "mae": 4.4705892225311175,
+      "pairs": 30
+    },
+    "capture": {
+      "bad_edge_pct": 21.011290818448703,
+      "compute_p50_ms": 22.04554167110473,
+      "compute_p95_ms": 31.181166705209762,
+      "edge_gradient_error": 40.92006004087119,
+      "edge_mae": 14.305344401108385,
+      "mae": 0.7470957530017451,
+      "pairs": 29
+    }
+  },
+  "runs": [
+    {
+      "buffer_ms": 44,
+      "generated_fps": 30,
+      "original_fps": 30,
+      "original_p50_ms": 78.35849997354671,
+      "original_p95_ms": 86.69162500882521,
+      "unique_fps": 60
+    },
+    {
+      "buffer_ms": 44,
+      "generated_fps": 30,
+      "original_fps": 30,
+      "original_p50_ms": 80.0652916659601,
+      "original_p95_ms": 80.84595832042396,
+      "unique_fps": 60
+    },
+    {
+      "buffer_ms": 44,
+      "generated_fps": 30,
+      "original_fps": 30,
+      "original_p50_ms": 86.18837501853704,
+      "original_p95_ms": 94.89187505096197,
+      "unique_fps": 60
+    }
+  ],
+  "clip_sha256": "a63d084920ee142de03cc619725d6e4eaec66583b7a6729262899f3ed26b2ab2",
+  "profiles": [
+    {
+      "buffer_ms": 44,
+      "generated_fps": 30,
+      "original_fps": 30,
+      "original_p50_ms": 80.0652916659601,
+      "original_p95_ms": 86.69162500882521,
+      "unique_fps": 60,
+      "min_unique_fps": 60
+    }
+  ],
+  "selected": {
+    "buffer_ms": 44,
+    "generated_fps": 30,
+    "original_fps": 30,
+    "original_p50_ms": 80.0652916659601,
+    "original_p95_ms": 86.69162500882521,
+    "unique_fps": 60,
+    "min_unique_fps": 60
+  },
+  "failures": []
+}

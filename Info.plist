@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>FrameBridge</string>
+	<key>CFBundleIdentifier</key>
+	<string>local.framebridge.preview</string>
+	<key>CFBundleName</key>
+	<string>FrameBridge</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.11.2</string>
+	<key>CFBundleVersion</key>
+	<string>25</string>
+	<key>FrameBridgeDetailBufferMS</key>
+	<integer>33</integer>
+	<key>LSMinimumSystemVersion</key>
+	<string>26.0</string>
+	<key>NSCameraUsageDescription</key>
+	<string>FrameBridge 需要相机权限来显示 USB HDMI 采集卡的实时画面。</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>允许 FrameBridge 播放 USB 采集卡传入的 HDMI 音频。</string>
+</dict>
+</plist>

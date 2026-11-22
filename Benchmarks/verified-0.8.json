@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "machine": "MacBookPro18,1",
+  "macOS": "27.2.1",
+  "seconds": 6,
+  "rounds": 3,
+  "fixture": "eab77afa1f5bcbbbff2a50f16c923731504e7ce4c70e9730b275b46f8e1866c2",
+  "source": "c81377a78e1d7e771a5015f760baaa0dd7e1fc4bba5f30cf70620c0826020c11",
+  "quality": {
+    "synthetic": {
+      "bad_edge_pct": 7.490141050663817,
+      "compute_p50_ms": 19.846083305310458,
+      "compute_p95_ms": 22.611374966800213,
+      "edge_gradient_error": 18.481733574107515,
+      "edge_mae": 6.925541212174007,
+      "mae": 4.4705892225311175,
+      "pairs": 30
+    },
+    "capture": {
+      "bad_edge_pct": 21.011290818448703,
+      "compute_p50_ms": 16.921999980695546,
+      "compute_p95_ms": 23.42387498356402,
+      "edge_gradient_error": 40.92006004087119,
+      "edge_mae": 14.305344401108385,
+      "mae": 0.7470957530017451,
+      "pairs": 29
+    }
+  },
+  "runs": [
+    {
+      "buffer_ms": 40,
+      "generated_fps": 30,
+      "original_fps": 30,
+      "original_p50_ms": 59.33670833474025,
+      "original_p95_ms": 67.67129170475528,
+      "unique_fps": 60
+    },
+    {
+      "buffer_ms": 40,
+      "generated_fps": 30,
+      "original_fps": 30,
+      "original_p50_ms": 57.50795832136646,
+      "original_p95_ms": 65.84008334903046,
+      "unique_fps": 60
+    },
+    {
+      "buffer_ms": 40,
+      "generated_fps": 29.833333333333332,
+      "original_fps": 30,
+      "original_p50_ms": 61.99895835015923,
+      "original_p95_ms": 70.32729167258367,
+      "unique_fps": 59.833333333333336
+    }
+  ],
+  "clip_sha256": "a63d084920ee142de03cc619725d6e4eaec66583b7a6729262899f3ed26b2ab2",
+  "profiles": [
+    {
+      "buffer_ms": 40,
+      "generated_fps": 30,
+      "original_fps": 30,
+      "original_p50_ms": 59.33670833474025,
+      "original_p95_ms": 67.67129170475528,
+      "unique_fps": 60,
+      "min_unique_fps": 59.833333333333336
+    }
+  ],
+  "selected": {
+    "buffer_ms": 40,
+    "generated_fps": 30,
+    "original_fps": 30,
+    "original_p50_ms": 59.33670833474025,
+    "original_p95_ms": 67.67129170475528,
+    "unique_fps": 60,
+    "min_unique_fps": 59.833333333333336
+  },
+  "failures": []
+}

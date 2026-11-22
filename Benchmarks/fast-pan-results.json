@@ -1,0 +1,32 @@
+{
+  "description": "Offline full-resolution texture pan (48 px per endpoint pair), independently moving occluder and stationary patch; brightness metrics only.",
+  "results": {
+    "baseline": {
+      "bad_edge_pct": 33.47110021324924,
+      "compute_p50_ms": 15.893791685812175,
+      "compute_p95_ms": 17.873416712973267,
+      "edge_gradient_error": 57.05896306689913,
+      "edge_mae": 21.298215513708385,
+      "mae": 1.2397472969450938,
+      "pairs": 16
+    },
+    "radius-2-limit-3": {
+      "bad_edge_pct": 33.47005827886332,
+      "compute_p50_ms": 16.413500008638948,
+      "compute_p95_ms": 17.318875005003065,
+      "edge_gradient_error": 57.029788904093415,
+      "edge_mae": 21.288619298014073,
+      "mae": 1.2860678399649332,
+      "pairs": 16
+    },
+    "radius-3-limit-3": {
+      "bad_edge_pct": 33.467279787167534,
+      "compute_p50_ms": 15.822125016711652,
+      "compute_p95_ms": 17.424916673917323,
+      "edge_gradient_error": 57.04271583670804,
+      "edge_mae": 21.278074922028576,
+      "mae": 1.2760435588709167,
+      "pairs": 16
+    }
+  }
+}
