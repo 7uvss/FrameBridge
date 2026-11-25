@@ -78,7 +78,7 @@ static char captureArrivalKey, vtMidpointKey;
     if(!_displayQueue) { *error=FrameError(@"无法创建送显队列"); return nil; }
     _inflight=dispatch_semaphore_create(2);
     _view=[[MTKView alloc] initWithFrame:NSZeroRect device:_engine.device];
-    ((CAMetalLayer *)_view.layer).maximumDrawableCount=2;
+    ((CAMetalLayer *)_view.layer).maximumDrawableCount=3;
     _view.colorPixelFormat=MTLPixelFormatBGRA8Unorm;
     CGColorSpaceRef space=CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
     _view.colorspace=space; CGColorSpaceRelease(space);
@@ -314,7 +314,7 @@ static char captureArrivalKey, vtMidpointKey;
     double pts=CMTimeGetSeconds(next.presentationTimeStamp);
     BOOL gap=_displayed && pts-CMTimeGetSeconds(_displayed.presentationTimeStamp)>0.024;
     // When a midpoint is outstanding, leave its slot open until close to due.
-    return pts<=due+(gap ? 0.004 : 0.008) ? next : _displayed;
+    return pts<=due+(gap ? 0.000 : 0.012) ? next : _displayed;
 }
 - (BOOL)consumeFrame:(VTFrameProcessorFrame *)frame {
     if(frame==_displayed) return YES;

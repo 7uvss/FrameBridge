@@ -55,11 +55,15 @@ static CVPixelBufferPoolRef makePool(int w,int h) {
     VTFrameProcessorFrame *prev=contiguous ? _lastSmall : [self scale:a pool:_low error:error];
     VTFrameProcessorFrame *next=prev ? [self scale:b pool:_low error:error] : nil;
     VTFrameProcessorFrame *small=next ? [_model midpointFrom:prev to:next error:error] : nil;
-    VTFrameProcessorFrame *guide=small ? [self scale:small pool:_high error:error] : nil;
-    if(guide && ready) ready(guide);
+    // The renderer samples normalized coordinates and can present the reference
+    // at model resolution while the capture-resolution detail pass finishes.
+    if(small && ready) ready(small);
     if(next){ _lastOriginal=b; _lastSmall=next; }
     dispatch_group_wait(pending,DISPATCH_TIME_FOREVER);
-    if(!guide || !donor || (needsRefinement && !needsRefinement())) return guide;
+    if(!small || (needsRefinement && !needsRefinement())) return small;
+    VTFrameProcessorFrame *guide=[self scale:small pool:_high error:error];
+    if(!guide) return ready ? small : nil;
+    if(!donor) return guide;
     return [_predictor restoreDetailIn:guide from:donor left:a right:b error:error] ?: guide;
 }
 - (void)dealloc {

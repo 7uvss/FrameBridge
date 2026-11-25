@@ -1,0 +1,124 @@
+{
+  "fixture": "Local 1080p60 gameplay capture loop, every other capture frame selected",
+  "environment": "Maximized Metal replay window, USB capture inactive",
+  "counting": "Distinct presented source timestamps, grouped by source second. Long intervals use actual drawable presentation times.",
+  "buffer_ms": 33,
+  "versions": {
+    "old": "0.11.5",
+    "early": "0.11.6"
+  },
+  "short_interleaved_runs_12s": [
+    {
+      "tag": "old",
+      "buffer_ms": 33,
+      "full_source_seconds": 12,
+      "generated_fps": 30,
+      "min_frames_per_source_second": 60,
+      "original_fps": 30,
+      "original_p50_ms": 62.082583317533135,
+      "original_p95_ms": 70.40733331814408,
+      "present_gap_max_ms": 33.333458355627954,
+      "present_gap_p95_ms": 24.999833316542208,
+      "slow_intervals_per_second": 3.5,
+      "unique_fps": 60
+    },
+    {
+      "tag": "early",
+      "buffer_ms": 33,
+      "full_source_seconds": 12,
+      "generated_fps": 30,
+      "min_frames_per_source_second": 60,
+      "original_fps": 30,
+      "original_p50_ms": 58.902000018861145,
+      "original_p95_ms": 59.726541687268764,
+      "present_gap_max_ms": 25.000416673719883,
+      "present_gap_p95_ms": 16.670750046614558,
+      "slow_intervals_per_second": 2.9166666666666665,
+      "unique_fps": 60
+    },
+    {
+      "tag": "early",
+      "buffer_ms": 33,
+      "full_source_seconds": 12,
+      "generated_fps": 30,
+      "min_frames_per_source_second": 60,
+      "original_fps": 30,
+      "original_p50_ms": 63.44175001140684,
+      "original_p95_ms": 64.39174996921793,
+      "present_gap_max_ms": 25.00008331844583,
+      "present_gap_p95_ms": 16.667083313222975,
+      "slow_intervals_per_second": 0.5,
+      "unique_fps": 60
+    },
+    {
+      "tag": "old",
+      "buffer_ms": 33,
+      "full_source_seconds": 12,
+      "generated_fps": 30,
+      "min_frames_per_source_second": 60,
+      "original_fps": 30,
+      "original_p50_ms": 65.56537502910942,
+      "original_p95_ms": 71.34099997347221,
+      "present_gap_max_ms": 25.000208348501474,
+      "present_gap_p95_ms": 16.667083371430635,
+      "slow_intervals_per_second": 1.5,
+      "unique_fps": 60
+    },
+    {
+      "tag": "early",
+      "buffer_ms": 33,
+      "full_source_seconds": 12,
+      "generated_fps": 30,
+      "min_frames_per_source_second": 60,
+      "original_fps": 30,
+      "original_p50_ms": 64.39912499627098,
+      "original_p95_ms": 72.7333749528043,
+      "present_gap_max_ms": 25.000208290293813,
+      "present_gap_p95_ms": 16.66704169474542,
+      "slow_intervals_per_second": 0.5,
+      "unique_fps": 60
+    },
+    {
+      "tag": "old",
+      "buffer_ms": 33,
+      "full_source_seconds": 12,
+      "generated_fps": 30,
+      "min_frames_per_source_second": 60,
+      "original_fps": 30,
+      "original_p50_ms": 59.870583296287805,
+      "original_p95_ms": 68.18937498610467,
+      "present_gap_max_ms": 33.33366668084636,
+      "present_gap_p95_ms": 24.99975002137944,
+      "slow_intervals_per_second": 3.4166666666666665,
+      "unique_fps": 60
+    }
+  ],
+  "continuous_runs_60s": {
+    "0.11.5": {
+      "buffer_ms": 33,
+      "full_source_seconds": 49,
+      "generated_fps": 29.783333333333335,
+      "min_frames_per_source_second": 58,
+      "original_fps": 30,
+      "original_p50_ms": 64.70816663932055,
+      "original_p95_ms": 73.03045835578814,
+      "present_gap_max_ms": 33.33354165079072,
+      "present_gap_p95_ms": 16.670541663188487,
+      "slow_intervals_per_second": 2.85,
+      "unique_fps": 59.78333333333333
+    },
+    "0.11.6": {
+      "buffer_ms": 33,
+      "full_source_seconds": 60,
+      "generated_fps": 30,
+      "min_frames_per_source_second": 60,
+      "original_fps": 30,
+      "original_p50_ms": 62.84520833287388,
+      "original_p95_ms": 70.19325002329424,
+      "present_gap_max_ms": 25.000250025186688,
+      "present_gap_p95_ms": 16.667083371430635,
+      "slow_intervals_per_second": 0.9333333333333333,
+      "unique_fps": 60
+    }
+  }
+}

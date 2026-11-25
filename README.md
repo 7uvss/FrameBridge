@@ -29,13 +29,13 @@ AVFoundation requests SDR video in video-range NV12. After capture starts, Frame
 
 For each consecutive pair of selected originals, VideoToolbox generates a 720p reference midpoint while Metal aligns the originals at capture resolution. Metal searches for large camera translations on a downsampled image, checks the motion at different heights and refines local displacement to quarter-pixel precision. Where local brightness and texture agree with the reference, the shader restores high-frequency luma detail from the aligned originals. When one endpoint is occluded, the shader can recover detail from the other. Matching stationary neighborhoods help preserve HUD text and fine textures. Fast turns, thin objects and newly revealed backgrounds can still produce visible artifacts.
 
-The player queues the upscaled guide as soon as it is ready. If detail restoration finishes before the midpoint is consumed, the restored frame takes its place at the same timestamp.
+The player queues the 720p reference as soon as it is ready. The display shader can scale it directly to the viewport while capture-resolution detail restoration runs. If detail restoration finishes before the midpoint is consumed, the restored frame takes its place at the same timestamp.
 
 VideoToolbox runs on a separate queue with one job in flight. A Metal path can generate the midpoint when the model is unavailable or busy. The player queues each selected original immediately so it can still appear when its midpoint misses the presentation deadline.
 
 ## Frame pacing and latency
 
-The default playback buffer is 33 ms. On high-refresh displays the renderer checks for new frames up to 120 times per second and uses two drawable buffers. HDMI audio goes directly through `AVCaptureAudioPreviewOutput` without an additional video-delay adjustment.
+The default playback buffer is 33 ms. On high-refresh displays the renderer checks for new frames up to 120 times per second and allows up to three drawable buffers with at most two render submissions in flight. HDMI audio goes directly through `AVCaptureAudioPreviewOutput` without an additional video-delay adjustment.
 
 The runtime log counts selected originals (选取), queued midpoints (补), frames actually presented (显示), and midpoints actually presented (上屏补帧). A static scene can still produce new timestamps. A slow interval is a gap longer than 22 ms between presentations of distinct frames. Software latency measures the time from an original frame entering the player until its first presentation. Measuring controller-to-screen latency also requires accounting for the game, HDMI capture, USB transfer and panel response.
 
