@@ -121,21 +121,30 @@ static char captureArrivalKey, vtMidpointKey;
     }
     dispatch_async(_nativeQueue,^{ @autoreleasepool {
         NSError *error=nil;
-        VTFrameProcessorFrame *mid=[model guidedMidpointFrom:left to:right error:&error];
+        __block VTFrameProcessorFrame *queuedGuide=nil;
+        VTFrameProcessorFrame *mid=[model guidedMidpointFrom:left to:right guideReady:^(VTFrameProcessorFrame *guide) {
+            @synchronized(self) {
+                if(epoch!=self->_epoch) return;
+                self->_metrics.vtReady++;
+                NSUInteger at=[self->_pending indexOfObjectIdenticalTo:right];
+                if(at==NSNotFound) { self->_overruns++; return; }
+                objc_setAssociatedObject(guide,&vtMidpointKey,@YES,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                [self->_pending insertObject:guide atIndex:at];
+                queuedGuide=guide;
+                self->_metrics.vtQueued++;
+                self->_generated++;
+            }
+        } error:&error];
         @synchronized(self) {
             self->_nativeBusy=NO;
             if(epoch!=self->_epoch) return;
             if(!mid) {self->_native=nil; NSLog(@"Apple interpolation stopped: %@",error); return;}
-            self->_metrics.vtReady++;
-            if(self->_displayed && CMTimeCompare(mid.presentationTimeStamp,self->_displayed.presentationTimeStamp)<=0) {
-                self->_overruns++; return;
+            if(!queuedGuide || mid==queuedGuide) return;
+            NSUInteger at=[self->_pending indexOfObjectIdenticalTo:queuedGuide];
+            if(at!=NSNotFound) {
+                objc_setAssociatedObject(mid,&vtMidpointKey,@YES,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                self->_pending[at]=mid;
             }
-            NSUInteger at=[self->_pending indexOfObjectIdenticalTo:right];
-            if(at==NSNotFound) { self->_overruns++; return; }
-            objc_setAssociatedObject(mid,&vtMidpointKey,@YES,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            self->_metrics.vtQueued++;
-            [self->_pending insertObject:mid atIndex:at];
-            self->_generated++;
         }
     }});
     return YES;
@@ -301,6 +310,12 @@ static char captureArrivalKey, vtMidpointKey;
 - (BOOL)consumeFrame:(VTFrameProcessorFrame *)frame {
     if(frame==_displayed) return YES;
     NSUInteger i=[_pending indexOfObjectIdenticalTo:frame];
+    // A guide already being encoded may have been refined at the same timestamp.
+    if(i==NSNotFound && objc_getAssociatedObject(frame,&vtMidpointKey)) {
+        i=[_pending indexOfObjectPassingTest:^BOOL(VTFrameProcessorFrame *candidate, NSUInteger idx, BOOL *stop) {
+            return CMTimeCompare(candidate.presentationTimeStamp,frame.presentationTimeStamp)==0;
+        }];
+    }
     if(i==NSNotFound) return NO;
     [_pending removeObjectsInRange:NSMakeRange(0,i+1)];
     _overruns+=i;

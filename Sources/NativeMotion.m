@@ -39,6 +39,9 @@ static CVPixelBufferPoolRef makePool(int w,int h) {
     return f;
 }
 - (VTFrameProcessorFrame *)guidedMidpointFrom:(VTFrameProcessorFrame *)a to:(VTFrameProcessorFrame *)b error:(NSError **)error {
+    return [self guidedMidpointFrom:a to:b guideReady:nil error:error];
+}
+- (VTFrameProcessorFrame *)guidedMidpointFrom:(VTFrameProcessorFrame *)a to:(VTFrameProcessorFrame *)b guideReady:(void (^)(VTFrameProcessorFrame *))ready error:(NSError **)error {
     // The predictor has independent mutable scratch textures from the renderer.
     if(!_predictor) _predictor=[[MetalEngine alloc] initWithError:error];
     if(!_predictor) return nil;
@@ -53,6 +56,7 @@ static CVPixelBufferPoolRef makePool(int w,int h) {
     VTFrameProcessorFrame *next=prev ? [self scale:b pool:_low error:error] : nil;
     VTFrameProcessorFrame *small=next ? [_model midpointFrom:prev to:next error:error] : nil;
     VTFrameProcessorFrame *guide=small ? [self scale:small pool:_high error:error] : nil;
+    if(guide && ready) ready(guide);
     if(next){ _lastOriginal=b; _lastSmall=next; }
     dispatch_group_wait(pending,DISPATCH_TIME_FOREVER);
     if(!guide || !donor) return guide;

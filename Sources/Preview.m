@@ -40,7 +40,7 @@ static void trace(NSString *message) {
     NSMenu *options=[[NSMenu alloc] initWithTitle:output.title];
     options.autoenablesItems=NO;
     output.submenu=options;
-    _detailMode=[options addItemWithTitle:@"清晰补帧" action:@selector(changeOutput:) keyEquivalent:@""];
+    _detailMode=[options addItemWithTitle:@"补帧" action:@selector(changeOutput:) keyEquivalent:@""];
     _nativeMode=[options addItemWithTitle:@"原生输出" action:@selector(changeOutput:) keyEquivalent:@""];
     _detailMode.target=self; _nativeMode.target=self;
     _detailMode.enabled=NO; _nativeMode.enabled=NO;
@@ -54,7 +54,7 @@ static void trace(NSString *message) {
     _window=[[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,1080,608)
         styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable
         backing:NSBackingStoreBuffered defer:NO];
-    _window.title=@"FrameBridge · 清晰补帧";
+    _window.title=@"FrameBridge · 补帧";
     _window.delegate=self; _window.minSize=NSMakeSize(540,340);
     _window.collectionBehavior=NSWindowCollectionBehaviorFullScreenPrimary;
     NSView *content=_window.contentView;
@@ -81,7 +81,7 @@ static void trace(NSString *message) {
     BOOL native=sender==_nativeMode;
     _detailMode.state=native ? NSControlStateValueOff : NSControlStateValueOn;
     _nativeMode.state=native ? NSControlStateValueOn : NSControlStateValueOff;
-    _window.title=native ? @"FrameBridge · 原生输出" : @"FrameBridge · 清晰补帧";
+    _window.title=native ? @"FrameBridge · 原生输出" : @"FrameBridge · 补帧";
     dispatch_async(_queue,^{ self->_player.nativeOutput=native; });
 }
 - (void)status:(NSString *)s {

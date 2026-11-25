@@ -19,7 +19,7 @@ Open the **Output** menu (输出) to switch modes during play. Both modes share 
 
 | Menu item | What it does |
 | --- | --- |
-| Frame interpolation (清晰补帧) | Selects one original frame every two 60 Hz capture slots and generates a midpoint between consecutive selected frames. The cadence stays fixed even when the game itself reaches 60 fps. If capture slots go missing, the player keeps the available originals and resumes interpolation when consecutive pairs return. |
+| Frame interpolation (补帧) | Selects one original frame every two 60 Hz capture slots and generates a midpoint between consecutive selected frames. The cadence stays fixed even when the game itself reaches 60 fps. If capture slots go missing, the player keeps the available originals and resumes interpolation when consecutive pairs return. |
 | Native output (原生输出) | Displays the latest frame from the card directly. Use this for games already running at 60 fps or to compare the original picture with the interpolated output. |
 | Reconnect (重新连接) | Reopens the capture session after a device or connection change. |
 
@@ -28,6 +28,8 @@ Open the **Output** menu (输出) to switch modes during play. Both modes share 
 AVFoundation requests SDR video in video-range NV12. After capture starts, FrameBridge reapplies the supported 60 Hz frame duration because the card can renegotiate to 20 Hz during startup. A Core Video Metal texture cache maps the luma and chroma planes for GPU processing.
 
 For each consecutive pair of selected originals, VideoToolbox generates a 720p reference midpoint while Metal aligns the originals at capture resolution. Metal searches for large camera translations on a downsampled image, checks the motion at different heights and refines local displacement to quarter-pixel precision. Where local brightness and texture agree with the reference, the shader restores high-frequency luma detail from the aligned originals. When one endpoint is occluded, the shader can recover detail from the other. Matching stationary neighborhoods help preserve HUD text and fine textures. Fast turns, thin objects and newly revealed backgrounds can still produce visible artifacts.
+
+The player queues the upscaled guide as soon as it is ready. If detail restoration finishes before the midpoint is consumed, the restored frame takes its place at the same timestamp.
 
 VideoToolbox runs on a separate queue with one job in flight. A Metal path can generate the midpoint when the model is unavailable or busy. The player queues each selected original immediately so it can still appear when its midpoint misses the presentation deadline.
 

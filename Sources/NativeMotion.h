@@ -5,4 +5,5 @@
 - (void)installPredictor:(MetalEngine *)predictor;
 - (instancetype)initWithWidth:(int)width height:(int)height modelWidth:(int)mw modelHeight:(int)mh error:(NSError **)error;
 - (VTFrameProcessorFrame *)guidedMidpointFrom:(VTFrameProcessorFrame *)a to:(VTFrameProcessorFrame *)b error:(NSError **)error;
+- (VTFrameProcessorFrame *)guidedMidpointFrom:(VTFrameProcessorFrame *)a to:(VTFrameProcessorFrame *)b guideReady:(void (^)(VTFrameProcessorFrame *))ready error:(NSError **)error;
 @end
