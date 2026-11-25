@@ -9,6 +9,7 @@ static char captureArrivalKey, vtMidpointKey;
 
 @implementation Player {
     MetalEngine *_engine, *_updatedMotion;
+    id<MTLCommandQueue> _displayQueue;
     NativeMotion *_native;
     dispatch_queue_t _nativeQueue;
     BOOL _nativeBusy, _metalBusy;
@@ -72,6 +73,9 @@ static char captureArrivalKey, vtMidpointKey;
     _detailBufferSeconds=bufferMS ? bufferMS.doubleValue/1000 : 0.040;
     _originalLatency=[NSMutableArray array];
     _pending=[NSMutableArray array];
+    // A fallback interpolation job can outlive the display deadline for an original.
+    _displayQueue=[_engine.device newCommandQueue];
+    if(!_displayQueue) { *error=FrameError(@"无法创建送显队列"); return nil; }
     _inflight=dispatch_semaphore_create(2);
     _view=[[MTKView alloc] initWithFrame:NSZeroRect device:_engine.device];
     ((CAMetalLayer *)_view.layer).maximumDrawableCount=2;
@@ -133,6 +137,11 @@ static char captureArrivalKey, vtMidpointKey;
                 queuedGuide=guide;
                 self->_metrics.vtQueued++;
                 self->_generated++;
+            }
+        } needsRefinement:^BOOL{
+            @synchronized(self) {
+                return epoch==self->_epoch && queuedGuide &&
+                       [self->_pending indexOfObjectIdenticalTo:queuedGuide]!=NSNotFound;
             }
         } error:&error];
         @synchronized(self) {
@@ -356,7 +365,7 @@ static char captureArrivalKey, vtMidpointKey;
     if(!drawable || !pass) {dispatch_semaphore_signal(_inflight);return;}
     CVMetalTextureRef y=[_engine plane:0 of:frame.buffer], uv=[_engine plane:1 of:frame.buffer];
     if(!y || !uv) {if(y) CFRelease(y); if(uv) CFRelease(uv);dispatch_semaphore_signal(_inflight);return;}
-    id<MTLCommandBuffer> cmd=[_engine.commands commandBuffer];
+    id<MTLCommandBuffer> cmd=[_displayQueue commandBuffer];
     id<MTLRenderCommandEncoder> enc=[cmd renderCommandEncoderWithDescriptor:pass];
     if(!enc) {CFRelease(y); CFRelease(uv); dispatch_semaphore_signal(_inflight);return;}
     @synchronized(self) {
