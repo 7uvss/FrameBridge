@@ -37,6 +37,14 @@ The default playback buffer is 33 ms. On high-refresh displays the renderer chec
 
 The runtime log counts selected originals (选取), queued midpoints (补), frames actually presented (显示), and midpoints actually presented (上屏补帧). A static scene can still produce new timestamps. A slow interval is a gap longer than 22 ms between presentations of distinct frames. Software latency measures the time from an original frame entering the player until its first presentation. Measuring controller-to-screen latency also requires accounting for the game, HDMI capture, USB transfer and panel response.
 
+To inspect recent playback, query the numeric performance records in the macOS unified log.
+
+```sh
+/usr/bin/log show --last 15m --style compact --predicate 'subsystem == "local.framebridge.preview" AND category == "performance"'
+```
+
+Each record covers `interval_s` seconds. Divide frame counts by this duration to get fps. The VT columns track the VideoToolbox-guided path and the Metal columns track the standalone fallback. Each path reports jobs started, midpoints produced, midpoints queued and distinct midpoints presented. Jobs can cross a reporting boundary, so sum counts over multiple records. `original_latency_p50_ms=-1` means no original-frame latency sample was available in the interval.
+
 ## Run benchmarks
 
 Use an idle or dedicated Mac with the display awake. Keep the refresh rate and system load comparable between runs. The benchmark builds a separate executable from the same player and shaders. It exits if FrameBridge is open, including when the preview opens during a test.

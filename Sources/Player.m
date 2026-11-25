@@ -2,8 +2,9 @@
 #import "NativeMotion.h"
 #import <simd/simd.h>
 #import <objc/runtime.h>
+#import <os/log.h>
 
-static char captureArrivalKey;
+static char captureArrivalKey, vtMidpointKey;
 #import <QuartzCore/QuartzCore.h>
 
 @implementation Player {
@@ -13,6 +14,11 @@ static char captureArrivalKey;
     BOOL _nativeBusy, _metalBusy;
     dispatch_queue_t _metalQueue;
     NSUInteger _longPairs, _missedSlots;
+    struct {
+        unsigned vtStarted, vtReady, vtQueued, vtPresented;
+        unsigned metalStarted, metalReady, metalBusySlots;
+    } _metrics;
+    os_log_t _performanceLog;
     NSUInteger _epoch;
     id<MTLRenderPipelineState> _pipeline;
     VTFrameProcessorFrame *_previous, *_displayed;
@@ -100,7 +106,7 @@ static char captureArrivalKey;
 - (void)reset {
     _capturePhase=0;
     _previous=nil; _maxSourceGap=0; _selected=0; _fault=nil;
-    @synchronized(self) { [_pending removeAllObjects]; [_originalLatency removeAllObjects]; _lastLatencyStamp=kCMTimeInvalid; _displayed=nil; _lastContentPresentation=_maxPresentationGap=0; _lastContentStamp=kCMTimeInvalid; _epoch++; _slowGaps=_missedSlots=_longPairs=0; _presentedMids=_presented=_overruns=_generated=0; }
+    @synchronized(self) { memset(&_metrics,0,sizeof(_metrics)); [_pending removeAllObjects]; [_originalLatency removeAllObjects]; _lastLatencyStamp=kCMTimeInvalid; _displayed=nil; _lastContentPresentation=_maxPresentationGap=0; _lastContentStamp=kCMTimeInvalid; _epoch++; _slowGaps=_missedSlots=_longPairs=0; _presentedMids=_presented=_overruns=_generated=0; }
 }
 // Queue the source immediately so it can be displayed if the midpoint arrives late.
 - (BOOL)submitNativeFrom:(VTFrameProcessorFrame *)left to:(VTFrameProcessorFrame *)right {
@@ -108,6 +114,7 @@ static char captureArrivalKey;
     NativeMotion *model;
     @synchronized(self) {
         if(!_native || _nativeBusy) return NO;
+        _metrics.vtStarted++;
         model=_native; epoch=_epoch; _nativeBusy=YES;
         [_pending addObject:right];
         while(_pending.count>6) { [_pending removeObjectAtIndex:0]; _overruns++; }
@@ -119,11 +126,14 @@ static char captureArrivalKey;
             self->_nativeBusy=NO;
             if(epoch!=self->_epoch) return;
             if(!mid) {self->_native=nil; NSLog(@"Apple interpolation stopped: %@",error); return;}
+            self->_metrics.vtReady++;
             if(self->_displayed && CMTimeCompare(mid.presentationTimeStamp,self->_displayed.presentationTimeStamp)<=0) {
                 self->_overruns++; return;
             }
             NSUInteger at=[self->_pending indexOfObjectIdenticalTo:right];
             if(at==NSNotFound) { self->_overruns++; return; }
+            objc_setAssociatedObject(mid,&vtMidpointKey,@YES,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            self->_metrics.vtQueued++;
             [self->_pending insertObject:mid atIndex:at];
             self->_generated++;
         }
@@ -137,7 +147,8 @@ static char captureArrivalKey;
     double offset;
     MetalEngine *engine;
     @synchronized(self) {
-        if (_metalBusy) { _missedSlots+=count; return; }
+        if (_metalBusy) { _metrics.metalBusySlots+=count; _missedSlots+=count; return; }
+        _metrics.metalStarted++;
         _metalBusy=YES;
         epoch=_epoch;
         offset=_offset;
@@ -155,6 +166,7 @@ static char captureArrivalKey;
             self->_metalBusy=NO;
             if(epoch!=self->_epoch) return;
             NSUInteger at=[self->_pending indexOfObjectIdenticalTo:right];
+            self->_metrics.metalReady+=(unsigned)frames.count;
             NSUInteger inserted=0;
             if(at!=NSNotFound) for(VTFrameProcessorFrame *mid in frames) {
                 if(self->_displayed && CMTimeCompare(mid.presentationTimeStamp,self->_displayed.presentationTimeStamp)<=0) continue;
@@ -231,7 +243,7 @@ static char captureArrivalKey;
     return [self ratesForInterval:t captureFPS:0 drops:0];
 }
 - (NSString *)ratesForInterval:(double)t captureFPS:(double)captureFPS drops:(NSUInteger)drops {
-    NSString *rates=nil;
+    NSString *rates=nil, *metrics=nil;
     @synchronized(self) {
         if(_nativeOutput) rates=[NSString stringWithFormat:@"原生输出 · 显示 %.0f",_presented/t];
         else rates=[NSString stringWithFormat:@"固定 30→60 · 选取 %.0f + 补 %.0f · 显示 %.0f · 上屏补帧 %.0f · 跳过 %lu",
@@ -247,12 +259,30 @@ static char captureArrivalKey;
             rates=[rates stringByAppendingFormat:@" · 输入断档 %lu / 未补 %lu",(unsigned long)_longPairs,(unsigned long)_missedSlots];
         rates=[rates stringByAppendingFormat:@" · 最长换帧 %.1f ms / 原帧 %.1f ms · 慢间隔 %lu",
                _maxPresentationGap*1000,_maxSourceGap*1000,(unsigned long)_slowGaps];
+        if(captureFPS>0) {
+            metrics=[NSString stringWithFormat:
+                @"interval_s=%.4f native=%d capture_fps=%.2f capture_drops=%lu selected=%lu "
+                 "vt_started=%u vt_ready=%u vt_queued=%u vt_presented=%u "
+                 "metal_started=%u metal_ready=%u metal_queued=%lu metal_presented=%lu metal_busy_slots=%u "
+                 "presented=%lu original_presented=%lu slow_gaps=%lu max_gap_ms=%.2f original_latency_p50_ms=%.2f",
+                t,_nativeOutput,captureFPS,(unsigned long)drops,(unsigned long)_selected,
+                _metrics.vtStarted,_metrics.vtReady,_metrics.vtQueued,_metrics.vtPresented,
+                _metrics.metalStarted,_metrics.metalReady,(unsigned long)(_generated-_metrics.vtQueued),
+                (unsigned long)(_presentedMids-_metrics.vtPresented),_metrics.metalBusySlots,
+                (unsigned long)_presented,(unsigned long)(_presented-_presentedMids),
+                (unsigned long)_slowGaps,_maxPresentationGap*1000,latency>0 ? latency : -1];
+        }
+        memset(&_metrics,0,sizeof(_metrics));
         _slowGaps=0;
         _maxPresentationGap=_maxSourceGap=0;
         _longPairs=_missedSlots=0;
         _generated=0; _presentedMids=_presented=_overruns=0;
     }
     _selected=0;
+    if(metrics) {
+        if(!_performanceLog) _performanceLog=os_log_create("local.framebridge.preview","performance");
+        os_log_with_type(_performanceLog,OS_LOG_TYPE_DEFAULT,"%{public}s",metrics.UTF8String);
+    }
     return _fault ?: rates;
 }
 // Caller holds the timeline lock. Selection is read-only until a drawable
@@ -336,6 +366,7 @@ static char captureArrivalKey;
     [enc drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3]; [enc endEncoding];
     CMTime stamp=frame.presentationTimeStamp;
     double arrival=[objc_getAssociatedObject(frame,&captureArrivalKey) doubleValue];
+    BOOL vtMidpoint=arrival==0 && objc_getAssociatedObject(frame,&vtMidpointKey)!=nil;
     [drawable addPresentedHandler:^(id<MTLDrawable> d){
         double presented=d.presentedTime;
         if(presented<=0) return;
@@ -352,6 +383,7 @@ static char captureArrivalKey;
             self->_lastContentStamp=stamp;
             self->_presented++;
             if(arrival==0) self->_presentedMids++;
+            if(vtMidpoint) self->_metrics.vtPresented++;
             if(arrival>0 && (!CMTIME_IS_VALID(self->_lastLatencyStamp) || CMTimeCompare(stamp,self->_lastLatencyStamp)>0)) {
                 self->_lastLatencyStamp=stamp;
                 if(self->_originalLatency.count<256) [self->_originalLatency addObject:@((presented-arrival)*1000)];
