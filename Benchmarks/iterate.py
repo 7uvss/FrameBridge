@@ -25,6 +25,7 @@ def save(path, obj):
 def snapshot(dest):
     dest.mkdir()
     shutil.copytree(ROOT / "Sources", dest / "Sources")
+    shutil.copytree(ROOT / "Assets", dest / "Assets")
     for name in ("Info.plist", "build.sh"):
         shutil.copy2(ROOT / name, dest / name)
     if (ROOT / ".signing-identity").is_file():

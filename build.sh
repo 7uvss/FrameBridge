@@ -9,6 +9,14 @@ trap 'rm -rf "$stage"' EXIT
 app="$stage/FrameBridge.app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp Sources/Pipeline.metal "$app/Contents/Resources/"
+iconset="$stage/FrameBridge.iconset"
+mkdir "$iconset"
+for size in 16 32 128 256 512; do
+    sips -z "$size" "$size" Assets/FrameBridge.png --out "$iconset/icon_${size}x${size}.png" >/dev/null
+    retina=$((size * 2))
+    sips -z "$retina" "$retina" Assets/FrameBridge.png --out "$iconset/icon_${size}x${size}@2x.png" >/dev/null
+done
+iconutil -c icns "$iconset" -o "$app/Contents/Resources/FrameBridge.icns"
 cp Info.plist "$app/Contents/Info.plist"
 xcrun clang -fobjc-arc -O2 -mmacosx-version-min=26.0 Sources/*.m -o "$app/Contents/MacOS/FrameBridge" -framework Metal -framework MetalKit -framework VideoToolbox -framework AppKit -framework AVFoundation -framework CoreMedia -framework CoreVideo -framework QuartzCore
 identity="${FRAMEBRIDGE_SIGN_IDENTITY:-}"
